@@ -13,6 +13,7 @@ dependencies = [
     # Network Sources
     "aiohttp>=3.12.14",
     # Config parsing
+    "pyyaml>=6.0.2",
     "toml>=0.10.2",
     "pydantic>=2.11.7",
     # Voice encrypt

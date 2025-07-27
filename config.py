@@ -1,8 +1,10 @@
 # coding: utf-8
+from os.path import exists
 from logging import getLogger
 
 from pydantic import BaseModel, ValidationError
-from toml import loads
+from yaml import safe_load as load_yaml
+from toml import loads as load_toml
 
 import utils as u
 
@@ -42,14 +44,22 @@ class Config:
 
     def __init__(self):
         try:
-            # load toml
-            with open(u.get_path('config.toml'), 'r', encoding='utf-8') as f:
-                raw_config: dict = loads(f.read())
+            if exists(u.get_path('config.yaml')):
+                # load yaml
+                with open(u.get_path('config.yaml'), 'r', encoding='utf-8') as f:
+                    raw_config: dict = load_yaml(f)
+            elif exists(u.get_path('config.toml')):
+                # load toml
+                with open(u.get_path('config.toml'), 'r', encoding='utf-8') as f:
+                    raw_config: dict = load_toml(f.read())
+            else:
+                # both not found
+                raise FileNotFoundError
 
             # parse config
             self.config = ConfigModel.model_validate(raw_config)
         except FileNotFoundError:
-            l.error('Config file config.toml not found!')
+            l.error('Config file config.yaml / config.toml not found!')
             exit(1)
         except ValidationError as e:
             l.error(f'Wrong config file!\n{e}')
