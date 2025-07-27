@@ -50,7 +50,7 @@ class CustomFormatter(Formatter):
             self.default_symbol = ''
 
     def format(self, record):
-        timestamp = datetime.now(timezone.utc).strftime('[%Y-%m-%d %H:%M:%S]')  # 格式化时间
+        timestamp = datetime.now(timezone.utc).strftime(f'[%Y-%m-%d %H:%M:%S]')  # 格式化时间
         symbol = f' {self.symbols.get(record.levelname, self.default_symbol)}'  # 表情符号
         level = self.replaces.get(record.levelname, f'[{record.levelname}]')  # 日志等级
         file = relative_path(record.pathname)  # 源文件名

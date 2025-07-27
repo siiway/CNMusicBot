@@ -7,6 +7,8 @@ requires-python = ">=3.10"
 dependencies = [
     # Basic
     "discord-py>=2.5.2",
+    # Colorful log
+    "colorama>=0.4.6",
     # Network Sources
     "aiohttp>=3.12.14",
     # Config parsing

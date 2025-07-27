@@ -1,3 +1,4 @@
-- [ ] pydantic & toml 处理配置文件
+- [x] logging
+- [x] pydantic & toml 处理配置文件
 - [ ] `get()` -> `u.get_json()`
-- [ ] 修复类型检查错误
+- [ ] 修复类型检查错误 & 其他小问题

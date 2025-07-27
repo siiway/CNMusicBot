@@ -1,17 +1,46 @@
 from asyncio import sleep
-from os import getenv
+import logging
+
 
 from discord import Intents, Activity, ActivityType, Interaction, app_commands, FFmpegPCMAudio, ui, ButtonStyle
 from discord.ext import commands
-from dotenv import load_dotenv
 
 import utils as u
+from config import Config
 
-load_dotenv()
-TOKEN = getenv("TOKEN")
-NCM_API = getenv("NCM_API")
-UNM_API = getenv("UNM_API")
-bot = commands.Bot("/", intents=Intents.all(), proxy="http://127.0.0.1:10808")
+# region logging-init
+
+# init logger
+l = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)
+root_logger = logging.getLogger()
+root_logger.handlers.clear()  # clear default handler
+# set stream handler
+shandler = logging.StreamHandler()
+shandler.setFormatter(u.CustomFormatter(colorful=True))
+root_logger.addHandler(shandler)
+
+# init config
+c = Config().config
+
+# continue init logger
+root_logger.level = logging.DEBUG if c.debug else logging.INFO  # set log level
+# reset stream handler
+root_logger.handlers.clear()
+shandler = logging.StreamHandler()
+shandler.setFormatter(u.CustomFormatter(colorful=True))
+root_logger.addHandler(shandler)
+# set file handler
+if c.log_file:
+    log_file_path = u.get_path(c.log_file)
+    l.info(f'Saving logs to {log_file_path}')
+    fhandler = logging.FileHandler(log_file_path, encoding='utf-8', errors='ignore')
+    fhandler.setFormatter(u.CustomFormatter(colorful=False))
+    root_logger.addHandler(fhandler)
+
+# endregion logging-init
+
+bot = commands.Bot("/", intents=Intents.all(), proxy=c.proxy)
 
 ids = []
 names = []
@@ -78,7 +107,7 @@ num = 0
 
 async def do_search(music_name: str, offset: int, previous: bool) -> str:
     global num
-    search = await u.get_json(f"{NCM_API}/cloudsearch?keywords={music_name}&limit=30&offset={offset}&type=1")
+    search = await u.get_json(f"{c.ncm_api}/cloudsearch?keywords={music_name}&limit=30&offset={offset}&type=1")
     if not search:
         return "Search failed!"
     messages = "**Search result:**\n"
@@ -136,7 +165,7 @@ async def play(interaction: Interaction, music_num: int):
         await interaction.response.send_message(f"Added `{music_name}` to playlist.")
         return
     await interaction.response.send_message("Starting player...")
-    j_lyric = get(f"{NCM_API}/lyric/new?id={music_id}")
+    j_lyric = get(f"{c.ncm_api}/lyric/new?id={music_id}")
     lyric = j_lyric.json()
     if lyric["code"] == 200:
         music_lrc = lyric["lrc"]["lyric"]
@@ -152,7 +181,7 @@ async def play(interaction: Interaction, music_num: int):
 
 async def start_play(music_id, music_name, interaction: Interaction, voice_cli):
     global playing
-    j_match = get(f"{UNM_API}/match?id={music_id}&server=qq,pyncmd")
+    j_match = get(f"{c.unm_api}/match?id={music_id}&server=qq,pyncmd")
     match = j_match.json()
     if match["code"] == 200 and match["message"] == "匹配成功":
         audio = FFmpegPCMAudio(match["data"]["url"])
@@ -165,4 +194,4 @@ async def start_play(music_id, music_name, interaction: Interaction, voice_cli):
         await interaction.edit_original_response(content="Player stopped.")
 
 
-bot.run(TOKEN)
+bot.run(c.token)
