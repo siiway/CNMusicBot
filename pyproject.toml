@@ -1,0 +1,17 @@
+[project]
+name = "cnmusicbot"
+version = "0.1.0"
+description = "A powerful discord music bot written in discord.py, supports Netease Music"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    # Basic
+    "discord-py>=2.5.2",
+    # Network Sources
+    "aiohttp>=3.12.14",
+    # Config parsing
+    "toml>=0.10.2",
+    "pydantic>=2.11.7",
+    # Voice encrypt
+    "pynacl>=1.5.0",
+]

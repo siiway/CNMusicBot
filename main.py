@@ -4,7 +4,8 @@ from os import getenv
 from discord import Intents, Activity, ActivityType, Interaction, app_commands, FFmpegPCMAudio, ui, ButtonStyle
 from discord.ext import commands
 from dotenv import load_dotenv
-from requests import get
+
+import utils as u
 
 load_dotenv()
 TOKEN = getenv("TOKEN")
@@ -77,8 +78,9 @@ num = 0
 
 async def do_search(music_name: str, offset: int, previous: bool) -> str:
     global num
-    j_search = get(f"{NCM_API}/cloudsearch?keywords={music_name}&limit=30&offset={offset}&type=1")
-    search = j_search.json()
+    search = await u.get_json(f"{NCM_API}/cloudsearch?keywords={music_name}&limit=30&offset={offset}&type=1")
+    if not search:
+        return "Search failed!"
     messages = "**Search result:**\n"
     if search["code"] == 200:
         for songs in search["result"]["songs"]:
