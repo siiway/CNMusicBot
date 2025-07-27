@@ -2,7 +2,7 @@ from asyncio import sleep
 import logging
 
 
-from discord import Intents, Activity, ActivityType, Interaction, app_commands, FFmpegPCMAudio, ui, ButtonStyle
+from discord import Intents, Activity, ActivityType, Interaction, app_commands, FFmpegPCMAudio, ui, ButtonStyle, VoiceChannel
 from discord.ext import commands
 
 import utils as u
@@ -155,7 +155,7 @@ async def play(interaction: Interaction, music_num: int):
     music_id = ids[music_num - 1]
     music_name = names[music_num - 1]
     try:
-        voice_cha = interaction.user.voice.channel
+        voice_chan: VoiceChannel = interaction.user.voice.channel # type: ignore
     except AttributeError:
         await interaction.response.send_message("**Please join the Voice Channel first!**")
         return
@@ -165,11 +165,10 @@ async def play(interaction: Interaction, music_num: int):
         await interaction.response.send_message(f"Added `{music_name}` to playlist.")
         return
     await interaction.response.send_message("Starting player...")
-    j_lyric = get(f"{c.ncm_api}/lyric/new?id={music_id}")
-    lyric = j_lyric.json()
-    if lyric["code"] == 200:
-        music_lrc = lyric["lrc"]["lyric"]
-    voice_cli = await voice_cha.connect()
+    # lyric = await u.get_json(f"{c.ncm_api}/lyric/new?id={music_id}")
+    # if lyric:
+    #     music_lrc = lyric["lrc"]["lyric"]
+    voice_cli = await voice_chan.connect()
     while True:
         if playlist_id:
             await start_play(playlist_id.pop(0), playlist_name.pop(0), interaction, voice_cli)
@@ -181,14 +180,13 @@ async def play(interaction: Interaction, music_num: int):
 
 async def start_play(music_id, music_name, interaction: Interaction, voice_cli):
     global playing
-    j_match = get(f"{c.unm_api}/match?id={music_id}&server=qq,pyncmd")
-    match = j_match.json()
-    if match["code"] == 200 and match["message"] == "匹配成功":
+    match = await u.get_json(f"{c.unm_api}/match?id={music_id}&server=qq,pyncmd")
+    if match and match["message"] == "匹配成功":
         audio = FFmpegPCMAudio(match["data"]["url"])
         voice_cli.play(audio)
         playing = True
         await interaction.edit_original_response(content=f"Player started.")
-        await interaction.channel.send(content=f"Now playing: {music_name}")
+        await interaction.channel.send(content=f"Now playing: {music_name}") # type: ignore
         while voice_cli.is_playing():
             await sleep(1)
         await interaction.edit_original_response(content="Player stopped.")
