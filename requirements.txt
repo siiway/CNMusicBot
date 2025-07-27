@@ -41,7 +41,7 @@ pyparsing==3.2.3
 PySocks==1.7.1
 PyYAML==6.0.2
 regex==2024.11.6
-requests==2.32.3
+requests==2.32.4
 requests-toolbelt==1.0.0
 safetensors==0.5.3
 six==1.17.0
