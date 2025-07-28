@@ -145,7 +145,7 @@ async def list(interaction: Interaction):
 
 @bot.tree.command(name="play", description="Play a music into Voice Channel.")
 @app_commands.describe(music_num="Music Num")
-async def play(interaction: Interaction, music_num: int):
+async def play(interaction: Interaction, music_num: int, channel: VoiceChannel | None = None):
     global ids
     global names
     global playing
@@ -154,11 +154,14 @@ async def play(interaction: Interaction, music_num: int):
         return
     music_id = ids[music_num - 1]
     music_name = names[music_num - 1]
-    try:
-        voice_chan: VoiceChannel = interaction.user.voice.channel # type: ignore
-    except AttributeError:
-        await interaction.response.send_message("**Please join the Voice Channel first!**")
-        return
+    if channel:
+        voice_chan = channel
+    else:
+        try:
+            voice_chan: VoiceChannel = interaction.user.voice.channel # type: ignore
+        except AttributeError:
+            await interaction.response.send_message("**Please join the Voice Channel first, or specific a voice channel manually!**")
+            return
     playlist_id.append(music_id)
     playlist_name.append(music_name)
     if playing:

@@ -6,7 +6,7 @@
 
 - Python **>= 3.10** (建议: 3.13)
 - pyproject.toml 中依赖
-- config.yaml / config.toml (喜欢哪个用哪个, 配置项见 config.py)
+- config.yaml / config.toml (喜欢哪个用哪个, 配置项见 [config.py](./config.py))
   - 一个 discord bot - https://discord.com/developers/applications
   - 网易云 音乐 / 解锁 api
   - :ladder: (如果部署在国内机器)

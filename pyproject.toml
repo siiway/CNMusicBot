@@ -1,7 +1,7 @@
 [project]
 name = "cnmusicbot"
 version = "0.1.0"
-description = "A powerful discord music bot written in discord.py, supports Netease Music"
+description = "A powerful discord music bot written in discord.py, supports Netease Music and Direct URL"
 license = { text = "AGPL" }
 readme = "README.md"
 requires-python = ">=3.10"

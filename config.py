@@ -26,10 +26,10 @@ class ConfigModel(BaseModel):
     '''Bot token'''
 
     ncm_api: str
-    '''网易云音乐 api 地址'''
+    '''网易云音乐 api 地址 (结尾不加 /)'''
 
     unm_api: str
-    '''网易云解灰 api 地址'''
+    '''网易云解灰 api 地址 (结尾不加 /)'''
 
     proxy: str | None = None
     '''代理地址'''
